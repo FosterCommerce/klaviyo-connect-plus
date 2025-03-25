@@ -1,50 +1,51 @@
 {
-  "name": "fostercommerce/klaviyo-connect-plus",
-  "description": "Craft Commerce",
-  "type": "craft-plugin",
+	"name": "fostercommerce/klaviyo-connect-plus",
+	"description": "A plugin for Craft CMS. Grow your ecommerce business with smarter email automations.",
+	"license": "proprietary",
+	"type": "craft-plugin",
 	"version": "1.0.0",
-  "keywords": [
-    "klaviyo"
-  ],
-  "homepage": "https://fostercommerce.com",
-  "require": {
-    "php": "^8.2",
-    "craftcms/cms": "^5.0.0",
-    "klaviyo/api": "^7.1"
-  },
-  "autoload": {
-    "psr-4": {
-      "fostercommerce\\klaviyoconnectplus\\": "src/"
-    }
-  },
-  "extra": {
-    "handle": "klaviyo-connect-plus",
-    "name": "Klaviyo Connect Plus",
-    "developer": "Foster Commerce",
+	"keywords": [
+		"klaviyo"
+	],
+	"homepage": "https://fostercommerce.com",
+	"require": {
+		"php": "^8.2",
+		"craftcms/cms": "^5.0.0",
+		"klaviyo/api": "^7.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"fostercommerce\\klaviyoconnectplus\\": "src/"
+		}
+	},
+	"extra": {
+		"handle": "klaviyo-connect-plus",
+		"name": "Klaviyo Connect Plus",
+		"developer": "Foster Commerce",
 		"documentationUrl": "https://github.com/fostercommerce/klaviyo-connect-plus"
-  },
-  "require-dev": {
-    "craftcms/commerce": "^5.0.0",
+	},
+	"require-dev": {
+		"craftcms/commerce": "^5.0.0",
 		"craftcms/phpstan": "dev-main",
 		"craftcms/rector": "dev-main",
-    "fostercommerce/ecs": "dev-main",
-    "fostercommerce/rector": "dev-main",
-    "phpstan/phpstan": "^1.11",
-    "roave/security-advisories": "dev-latest"
-  },
-  "config": {
-    "allow-plugins": {
-      "yiisoft/yii2-composer": true,
-      "craftcms/plugin-installer": true
-    }
-  },
-  "prefer-stable": true,
-  "minimum-stability": "dev",
-  "scripts": {
-    "phpstan": "phpstan --memory-limit=1G",
-    "ecs:check": "ecs check --ansi --memory-limit=1G",
-    "ecs:fix": "ecs check --ansi --fix --memory-limit=1G",
-    "rector:fix": "rector process",
-    "rector:dry-run": "rector process --dry-run"
-  }
+		"fostercommerce/ecs": "dev-main",
+		"fostercommerce/rector": "dev-main",
+		"phpstan/phpstan": "^1.11",
+		"roave/security-advisories": "dev-latest"
+	},
+	"config": {
+		"allow-plugins": {
+			"yiisoft/yii2-composer": true,
+			"craftcms/plugin-installer": true
+		}
+	},
+	"prefer-stable": true,
+	"minimum-stability": "dev",
+	"scripts": {
+		"phpstan": "phpstan --memory-limit=1G",
+		"ecs:check": "ecs check --ansi --memory-limit=1G",
+		"ecs:fix": "ecs check --ansi --fix --memory-limit=1G",
+		"rector:fix": "rector process",
+		"rector:dry-run": "rector process --dry-run"
+	}
 }

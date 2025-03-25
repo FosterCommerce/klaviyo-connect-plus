@@ -18,6 +18,7 @@ This plugin requires Craft 3.x and Commerce 2.x
 
 - [Installation](Installation.md)
 - [Configuration](Configuration.md)
+- [Migrating from Klaviyo Connect](Migration.md)
 
 ## Features
 

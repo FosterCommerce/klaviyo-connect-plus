@@ -1,0 +1,192 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.autosuggestField({
+    label: 'Public API Key / Site ID'|t('klaviyo-connect-plus'),
+    instructions: 'See Klaviyo -> Account -> Settings -> API Keys.'|t('klaviyo-connect-plus'),
+    id: 'klaviyoSiteId',
+    name: 'klaviyoSiteId',
+    value: settings.klaviyoSiteId,
+    errors: settings.getErrors('klaviyoSiteId'),
+    class: 'ltr',
+    suggestEnvVars: true,
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Private API Key'|t('klaviyo-connect-plus'),
+    instructions: 'See Klaviyo -> Account -> Settings -> API Keys.'|t('klaviyo-connect-plus'),
+    id: 'klaviyoApiKey',
+    name: 'klaviyoApiKey',
+    value: settings.klaviyoApiKey,
+    errors: settings.getErrors('klaviyoApiKey'),
+    class: 'ltr',
+    suggestEnvVars: true,
+}) }}
+
+
+<div class="field" id="klaviyoAvailableLists-field">
+  <div class="heading">
+    <label>Lists</label>
+    <p class="instructions">{{ "Select lists available to Control Panel" | t }}</p>
+  </div>
+{% if craft.klaviyoconnectplus.lists is not null %}
+  <div class="input">
+    <input type="hidden" name="klaviyoListsAll" value="0" />
+    <input type="hidden" name="klaviyoAvailableLists[]" value="" />
+    <div class="field checkboxfield">
+      <input type="checkbox"
+        class="klaviyoListsAll"
+        id="klaviyoListsAll"
+        name="klaviyoListsAll"
+        value="1"
+        {% if settings.klaviyoListsAll %}checked="checked"{% endif %}
+      />
+      <label for="klaviyoListsAll" class="klaviyoListsAll-label">All</label>
+    </div>
+    {% for list in craft.klaviyoconnectplus.lists %}
+    <div class="field checkboxfield">
+      <input type="checkbox" name="klaviyoAvailableLists[]"
+        class="klaviyoAvailableLists"
+        id="klaviyoAvailableLists{{ list.id }}" value="{{ list.id }}"
+        {% if list.id in settings.klaviyoAvailableLists %}
+          checked="checked"
+        {% endif %}
+      />
+      <label for="klaviyoAvailableLists{{ list.id }}">{{ list.name }}</label>
+    </div>
+    {% endfor %}
+  </div>
+{% elseif craft.klaviyoconnectplus.error is not null  %}
+  <ul class="errors">
+    <li>{{craft.klaviyoconnectplus.error}}</li>
+  </ul>
+{% else %}
+  <ul class="errors">
+    <li>No lists available</li>
+  </ul>
+{% endif %}
+</div>
+
+{% css %}
+  .klaviyoListsAll-label {
+    font-weight: bold;
+  }
+{% endcss %}
+
+{% js %}
+  var checkAll = document.querySelector('.klaviyoListsAll');
+  var checkboxes = document.querySelectorAll('.klaviyoAvailableLists');
+  if (checkAll && checkboxes) {
+    checkAll.onchange = function () {
+      checkboxes.forEach(function (checkbox) {
+        checkbox.checked = checkAll.checked;
+      });
+    };
+
+    checkboxes.forEach(function (checkbox) {
+      if (checkAll.checked) checkbox.checked = true;
+      checkbox.onchange = function () {
+        checkAll.checked = false;
+      };
+    });
+  }
+{% endjs %}
+
+<div class="field" id="klaviyoAvailableGroups-field">
+  <div class="heading">
+    <label>User Groups</label>
+    <p class="instructions">{{ "Select user groups to track changes to" | t }}</p>
+  </div>
+  <div class="input">
+    <input type="hidden" name="klaviyoAvailableGroups[]" value="" />
+    {% for group in craft.app.userGroups.getAllGroups %}
+    <div class="field checkboxfield">
+      <input type="checkbox" name="klaviyoAvailableGroups[]"
+        class="klaviyoAvailableGroups"
+        id="klaviyoAvailableGroups{{ group.id }}" value="{{ group.id }}"
+        {% if group.id in settings.klaviyoAvailableGroups %}
+          checked="checked"
+        {% endif %}
+      />
+      <label for="klaviyoAvailableGroups{{ group.id }}">{{ group.name }}</label>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="field" id="eventPrefix-field">
+  <div class="heading">
+    <label for="cartUrl">Event Prefix</label>
+    <p class="instructions">
+      {{ "Add prefix text sent for all events. For example '-Prefix- Placed Order'. Optional." | t }}
+    </p>
+  </div>
+  <div class="input">
+    <input
+      class="text fullwidth" type="text" id="eventPrefix" name="eventPrefix"
+      value="{{ settings.eventPrefix }}">
+  </div>
+</div>
+
+<div class="field" id="cartUrl-field">
+  <div class="heading">
+    <label for="cartUrl">Cart URL</label>
+    <p class="instructions">{{ "Url to your stores cart" | t }}</p>
+  </div>
+  <div class="input">
+    <input
+      class="text fullwidth" type="text" id="cartUrl" name="cartUrl"
+      value="{{ settings.cartUrl }}">
+  </div>
+</div>
+
+<div class="field" id="productImageField-field">
+  <div class="heading">
+    <label for="productImageField">Product Image Handle</label>
+    <p class="instructions">{{ "Field to access product images" | t }}</p>
+  </div>
+  <div class="input">
+    <input
+      class="text fullwidth" type="text" id="productImageField" name="productImageField"
+      value="{{ settings.productImageField }}">
+  </div>
+</div>
+
+<div class="field" id="productImageFieldTransformation-field">
+  <div class="heading">
+    <label for="productImageFieldTransformation">Product Image Transformation Handle</label>
+    <p class="instructions">{{ "Image field transformation to apply" | t }}</p>
+  </div>
+  <div class="input">
+    <input
+      class="text fullwidth" type="text" id="productImageFieldTransformation" name="productImageFieldTransformation"
+      value="{{ settings.productImageFieldTransformation }}">
+  </div>
+</div>
+
+{{ forms.checkboxField({
+  label: "Track Commerce Cart Updated",
+  name: 'trackCommerceCartUpdated',
+  checked: settings.trackCommerceCartUpdated,
+  instructions: 'Track in Klaviyo when the cart is updated'
+}) }}
+
+{{ forms.checkboxField({
+  label: "Track Commerce Order Complete",
+  name: 'trackCommerceOrderCompleted',
+  checked: settings.trackCommerceOrderCompleted,
+  instructions: 'Track in Klaviyo when order is completed'
+}) }}
+
+{{ forms.checkboxField({
+  label: "Track Commerce Order Status Updates",
+  name: 'trackCommerceStatusUpdated',
+  checked: settings.trackCommerceStatusUpdated,
+  instructions: 'Track in Klaviyo when order status is updated'
+}) }}
+
+{{ forms.checkboxField({
+  label: "Track Commerce Order Refunds",
+  name: 'trackCommerceRefunded',
+  checked: settings.trackCommerceRefunded,
+  instructions: 'Track in Klaviyo when a refund or partial refund is given'
+}) }}

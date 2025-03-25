@@ -1,0 +1,11 @@
+{% from "_includes/forms" import checkboxGroup %}
+
+{% if options|length == 0 %}
+    No lists available
+{% else %}
+    {{ checkboxGroup({
+        name: name,
+        options: options,
+        values: values,
+    }) }}
+{% endif %}

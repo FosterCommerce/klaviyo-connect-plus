@@ -30,8 +30,7 @@
 		"craftcms/rector": "dev-main",
 		"fostercommerce/ecs": "dev-main",
 		"fostercommerce/rector": "dev-main",
-		"phpstan/phpstan": "^1.11",
-		"roave/security-advisories": "dev-latest"
+		"phpstan/phpstan": "^1.11"
 	},
 	"config": {
 		"allow-plugins": {

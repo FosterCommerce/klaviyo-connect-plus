@@ -11,7 +11,7 @@
 	"require": {
 		"php": "^8.2",
 		"craftcms/cms": "^5.0.0",
-		"klaviyo/api": "^7.1"
+		"klaviyo/api": "^14.0.0"
 	},
 	"autoload": {
 		"psr-4": {

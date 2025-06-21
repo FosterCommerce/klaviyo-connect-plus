@@ -112,7 +112,7 @@ class ApiController extends Controller
 					} else {
 						Craft::warning(
 							Craft::t(
-								'klaviyoconnectplus',
+								'klaviyo-connect-plus',
 								'Skipping order tracking; Craft Commerce needs to be installed and enabled to track order events.'
 							),
 							__METHOD__
@@ -129,7 +129,7 @@ class ApiController extends Controller
 			} else {
 				Craft::warning(
 					Craft::t(
-						'klaviyoconnectplus',
+						'klaviyo-connect-plus',
 						'Skipping event tracking; An event name is required.'
 					),
 					__METHOD__

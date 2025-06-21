@@ -37,7 +37,7 @@ class ListField extends Field
 			}
 		}
 
-		return Craft::$app->getView()->renderTemplate('klaviyoconnectplus/fieldtypes/select', [
+		return Craft::$app->getView()->renderTemplate('klaviyo-connect-plus/fieldtypes/select', [
 			'name' => $this->handle,
 			'options' => $listOptions,
 			'value' => $value ? $value->id : null,

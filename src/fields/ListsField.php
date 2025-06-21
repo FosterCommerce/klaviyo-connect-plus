@@ -9,6 +9,7 @@ use craft\helpers\ArrayHelper;
 use fostercommerce\klaviyoconnectplus\models\Settings;
 use fostercommerce\klaviyoconnectplus\Plugin;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Collection;
 
 class ListsField extends Field
 {
@@ -61,24 +62,20 @@ class ListsField extends Field
 
 	public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
 	{
-		$value = is_array($value) ? collect($value)->pluck('id')->toArray() : [];
-
-		$modified = [];
-
 		try {
-			$lists = Plugin::getInstance()->api->getLists();
+			$lists = collect(Plugin::getInstance()->api->getLists());
 		} catch (ClientException) {
-			$lists = [];
+			$lists = collect([]);
 		}
 
-		if ($value !== []) {
-			foreach ($lists as $list) {
-				if (in_array($list->id, $value, true)) {
-					$modified[] = $list;
-				}
-			}
-		}
+		$value = collect(is_array($value) ? $value : []);
+		$value = $value
+			->when(
+				is_string($value->first()),
+				fn ($collection): Collection => $collection,
+				fn ($collection): Collection => $collection->pluck('id'),
+			);
 
-		return $modified;
+		return $lists->filter(fn ($list) => $value->contains($list->id))->toArray();
 	}
 }

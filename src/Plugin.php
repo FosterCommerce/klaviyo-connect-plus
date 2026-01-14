@@ -65,18 +65,19 @@ class Plugin extends \craft\base\Plugin
 		Event::on(
 			\craft\web\Application::class,
 			\craft\web\Application::EVENT_INIT,
-			static function(): void {
+			static function (): void {
 				$request = Craft::$app->getRequest();
 
-				if (!$request->getIsConsoleRequest()) {
+				if (! $request->getIsConsoleRequest()) {
 					$path = $request->getPathInfo();
 
 					// Redirect old plugin handle URLs to new one
 					if (str_starts_with($path, 'actions/klaviyoconnectplus/cart/restore') ||
 						str_starts_with($path, 'actions/klaviyoconnect/cart/restore')) {
-
 						$number = $request->getParam('number');
-						$newUrl = \craft\helpers\UrlHelper::actionUrl('klaviyo-connect-plus/cart/restore', ['number' => $number]);
+						$newUrl = \craft\helpers\UrlHelper::actionUrl('klaviyo-connect-plus/cart/restore', [
+							'number' => $number,
+						]);
 
 						Craft::$app->getResponse()->redirect($newUrl)->send();
 						Craft::$app->end();

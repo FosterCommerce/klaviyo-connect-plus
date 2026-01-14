@@ -33,7 +33,7 @@ class CartController extends Controller
 			throw new HttpException(404, 'Cart not found');
 		}
 
-		if ( $order->isCompleted) {
+		if ($order->isCompleted) {
 			throw new HttpException(400, 'Cannot restore a completed order');
 		}
 

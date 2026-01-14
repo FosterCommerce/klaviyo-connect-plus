@@ -3,8 +3,8 @@
 namespace fostercommerce\klaviyoconnectplus\controllers;
 
 use Craft;
-use craft\web\Controller;
 use craft\commerce\Plugin as Commerce;
+use craft\web\Controller;
 use fostercommerce\klaviyoconnectplus\models\Settings;
 use fostercommerce\klaviyoconnectplus\Plugin;
 use yii\web\HttpException;
@@ -16,28 +16,28 @@ class CartController extends Controller
 
 	public function actionRestore(): Response
 	{
-		if (!Craft::$app->plugins->isPluginEnabled('commerce')) {
+		if (! Craft::$app->plugins->isPluginEnabled('commerce')) {
 			throw new HttpException(400, 'Craft Commerce needs to be installed and enabled to restore carts.');
 		}
 
 		$number = Craft::$app->getRequest()->getParam('number');
 
-		if (!$number) {
+		if (! $number) {
 			throw new HttpException(400, 'Cart number is required');
 		}
 
 		$commerce = Commerce::getInstance();
 		$order = $commerce->getOrders()->getOrderByNumber($number);
 
-		if (!$order) {
+		if (! $order) {
 			throw new HttpException(404, 'Cart not found');
 		}
 
-		if ($order->isCompleted) {
+		if ( $order->isCompleted) {
 			throw new HttpException(400, 'Cannot restore a completed order');
 		}
 
-		if (!$order->hasLineItems()) {
+		if (! $order->hasLineItems()) {
 			throw new HttpException(400, 'Cart is empty');
 		}
 
@@ -55,8 +55,8 @@ class CartController extends Controller
 			$session->set('commerce_cart', $order->number);
 
 			$session->setNotice(Craft::t('klaviyo-connect-plus', 'Your cart has been restored.'));
-		} catch (\Exception $e) {
-			Craft::error('Failed to restore cart: ' . $e->getMessage(), 'klaviyo-connect-plus');
+		} catch (\Exception $exception) {
+			Craft::error('Failed to restore cart: ' . $exception->getMessage(), 'klaviyo-connect-plus');
 			throw new HttpException(500, 'Failed to restore cart');
 		}
 

@@ -27,7 +27,6 @@ use yii\base\Event;
  * @property \fostercommerce\klaviyoconnectplus\services\Api $api
  * @property \fostercommerce\klaviyoconnectplus\services\Track $track
  * @property \fostercommerce\klaviyoconnectplus\services\Map $map
- * @property \fostercommerce\klaviyoconnectplus\services\Cart $cart
  */
 class Plugin extends \craft\base\Plugin
 {
@@ -41,7 +40,6 @@ class Plugin extends \craft\base\Plugin
 			'api' => \fostercommerce\klaviyoconnectplus\services\Api::class,
 			'track' => \fostercommerce\klaviyoconnectplus\services\Track::class,
 			'map' => \fostercommerce\klaviyoconnectplus\services\Map::class,
-			'cart' => \fostercommerce\klaviyoconnectplus\services\Cart::class,
 		]);
 
 		/** @var Settings $settings */
@@ -61,6 +59,29 @@ class Plugin extends \craft\base\Plugin
 			UrlManager::EVENT_REGISTER_CP_URL_RULES,
 			static function (RegisterUrlRulesEvent $event): void {
 				$event->rules['klaviyo-connect-plus/sync-orders'] = 'klaviyo-connect-plus/api/sync-orders';
+			}
+		);
+
+		Event::on(
+			\craft\web\Application::class,
+			\craft\web\Application::EVENT_INIT,
+			static function(): void {
+				$request = Craft::$app->getRequest();
+
+				if (!$request->getIsConsoleRequest()) {
+					$path = $request->getPathInfo();
+
+					// Redirect old plugin handle URLs to new one
+					if (str_starts_with($path, 'actions/klaviyoconnectplus/cart/restore') ||
+						str_starts_with($path, 'actions/klaviyoconnect/cart/restore')) {
+
+						$number = $request->getParam('number');
+						$newUrl = \craft\helpers\UrlHelper::actionUrl('klaviyo-connect-plus/cart/restore', ['number' => $number]);
+
+						Craft::$app->getResponse()->redirect($newUrl)->send();
+						Craft::$app->end();
+					}
+				}
 			}
 		);
 

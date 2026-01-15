@@ -16,10 +16,6 @@ class CartController extends Controller
 
 	public function actionRestore(): Response
 	{
-		if (! Craft::$app->plugins->isPluginEnabled('commerce')) {
-			throw new HttpException(400, 'Craft Commerce needs to be installed and enabled to restore carts.');
-		}
-
 		$number = Craft::$app->getRequest()->getParam('number');
 
 		if (! $number) {
@@ -37,55 +33,47 @@ class CartController extends Controller
 			throw new HttpException(400, 'Cannot restore a completed order');
 		}
 
-		if (! $order->hasLineItems()) {
-			throw new HttpException(400, 'Cart is empty');
-		}
-
 		// Get current user
 		$currentUser = Craft::$app->getUser()->getIdentity();
 		$currentUserId = $currentUser ? $currentUser->id : null;
 
-		// Check if cart belongs to a user account
-		// If user is not logged in, or logged in as different user
-		if ($order->customerId && (! $currentUserId || $order->customerId !== $currentUserId)) {
-			// Show message page using CP template mode
-			$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
-			$loginUrl = \craft\helpers\UrlHelper::url($loginPath, [
-				'return' => Craft::$app->getRequest()->getAbsoluteUrl(),
-			]);
-			$view = Craft::$app->getView();
-			$oldMode = $view->getTemplateMode();
-			$view->setTemplateMode(\craft\web\View::TEMPLATE_MODE_CP);
-			$html = $view->renderTemplate('klaviyo-connect-plus/login-required', [
-				'loginUrl' => $loginUrl,
-				'message' => Craft::t('klaviyo-connect-plus', 'This cart belongs to a user account. Please log in to view it.'),
-			]);
-			$view->setTemplateMode($oldMode);
-			return $this->asRaw($html);
+		// Check if cart belongs to a CREDENTIALED user account (matches Commerce's behavior)
+		if ($order->customerId) {
+			$cartCustomer = $order->getCustomer();
+
+			// Only require login if the customer is credentialed (has a user account)
+			if ($cartCustomer && $cartCustomer->getIsCredentialed()) {
+				// If no one is logged in, or wrong user is logged in
+				if (! $currentUserId || $order->customerId !== $currentUserId) {
+					// Show message page using CP template mode
+					$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
+					$loginUrl = \craft\helpers\UrlHelper::url($loginPath, [
+						'return' => Craft::$app->getRequest()->getAbsoluteUrl(),
+					]);
+					$view = Craft::$app->getView();
+					$oldMode = $view->getTemplateMode();
+					$view->setTemplateMode(\craft\web\View::TEMPLATE_MODE_CP);
+					$html = $view->renderTemplate('klaviyo-connect-plus/login-required', [
+						'loginUrl' => $loginUrl,
+						'message' => Craft::t('klaviyo-connect-plus', 'This cart belongs to a user account. Please log in to view it.'),
+					]);
+					$view->setTemplateMode($oldMode);
+					return $this->asRaw($html);
+				}
+			}
 		}
 
-		// At this point, either:
-		// - Cart has no customer (guest cart), OR
-		// - Current user owns the cart
+		// At this point, one of these is true:
+		// - Cart has no customer (guest cart)
+		// - Cart has non-credentialed customer (guest with email only)
+		// - Current user owns the cart (credentialed customer)
 
-		// Clear current cart
+		// Clear current cart and restore using Commerce 5's API
 		$cartsService = $commerce->getCarts();
 		$cartsService->forgetCart();
+		$cartsService->setSessionCartNumber($order->number);
 
-		// Set session
 		$session = Craft::$app->getSession();
-		$session->set('commerce_cart', $order->number);
-
-		// Use reflection to set the cart
-		try {
-			$reflection = new \ReflectionClass($cartsService);
-			$cartProperty = $reflection->getProperty('_cart');
-			$cartProperty->setAccessible(true);
-			$cartProperty->setValue($cartsService, $order);
-		} catch (\Exception $exception) {
-			Craft::error('Reflection failed: ' . $exception->getMessage(), 'klaviyo-connect-plus');
-		}
-
 		$session->setNotice(Craft::t('klaviyo-connect-plus', 'Your cart has been restored.'));
 
 		/** @var Settings $settings */
@@ -93,7 +81,7 @@ class CartController extends Controller
 		$cartUrl = $settings->cartUrl;
 
 		if ((string) $cartUrl === '') {
-			throw new HttpException(400, 'Cart URL is required.');
+			throw new HttpException(400, 'Cart URL is not configured. Please set it in Settings → Klaviyo Connect Plus → Cart URL.');
 		}
 
 		return $this->redirect($cartUrl);

@@ -16,20 +16,20 @@ class CartController extends Controller
 
 	public function actionRestore(): Response
 	{
-		if (!Craft::$app->plugins->isPluginEnabled('commerce')) {
+		if (! Craft::$app->plugins->isPluginEnabled('commerce')) {
 			throw new HttpException(400, 'Craft Commerce needs to be installed and enabled to restore carts.');
 		}
 
 		$number = Craft::$app->getRequest()->getParam('number');
 
-		if (!$number) {
+		if (! $number) {
 			throw new HttpException(400, 'Cart number is required');
 		}
 
 		$commerce = Commerce::getInstance();
 		$order = $commerce->getOrders()->getOrderByNumber($number);
 
-		if (!$order) {
+		if (! $order) {
 			throw new HttpException(404, 'Cart not found');
 		}
 
@@ -37,7 +37,7 @@ class CartController extends Controller
 			throw new HttpException(400, 'Cannot restore a completed order');
 		}
 
-		if (!$order->hasLineItems()) {
+		if (! $order->hasLineItems()) {
 			throw new HttpException(400, 'Cart is empty');
 		}
 
@@ -48,7 +48,7 @@ class CartController extends Controller
 		// Check if cart belongs to a user account
 		if ($order->customerId) {
 			// If user is not logged in, or logged in as different user
-			if (!$currentUserId || $order->customerId !== $currentUserId) {
+			if (! $currentUserId || $order->customerId !== $currentUserId) {
 				// Show message page using CP template mode
 				$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
 				$loginUrl = \craft\helpers\UrlHelper::url($loginPath, [

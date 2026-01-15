@@ -36,6 +36,9 @@ class Plugin extends \craft\base\Plugin
 	{
 		parent::init();
 
+		// Set the base template directory for the plugin
+		Craft::setAlias('@klaviyo-connect-plus', $this->getBasePath());
+
 		$this->setComponents([
 			'api' => \fostercommerce\klaviyoconnectplus\services\Api::class,
 			'track' => \fostercommerce\klaviyoconnectplus\services\Track::class,

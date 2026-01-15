@@ -47,11 +47,11 @@ class CartController extends Controller
 
 		// Check if cart belongs to a user account
 		// If user is not logged in, or logged in as different user
-		if ($order->customerId && (!$currentUserId || $order->customerId !== $currentUserId)) {
+		if ($order->customerId && (! $currentUserId || $order->customerId !== $currentUserId)) {
 			// Show message page using CP template mode
 			$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
 			$loginUrl = \craft\helpers\UrlHelper::url($loginPath, [
-				'return' => Craft::$app->getRequest()->getAbsoluteUrl()
+				'return' => Craft::$app->getRequest()->getAbsoluteUrl(),
 			]);
 			$view = Craft::$app->getView();
 			$oldMode = $view->getTemplateMode();

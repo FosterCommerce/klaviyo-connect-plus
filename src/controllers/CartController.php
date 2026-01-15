@@ -38,29 +38,24 @@ class CartController extends Controller
 		$currentUserId = $currentUser ? $currentUser->id : null;
 
 		// Check if cart belongs to a CREDENTIALED user account (matches Commerce's behavior)
-		if ($order->customerId) {
-			$cartCustomer = $order->getCustomer();
+		$cartCustomer = $order->getCustomer();
 
-			// Only require login if the customer is credentialed (has a user account)
-			if ($cartCustomer && $cartCustomer->getIsCredentialed()) {
-				// If no one is logged in, or wrong user is logged in
-				if (! $currentUserId || $order->customerId !== $currentUserId) {
-					// Show message page using CP template mode
-					$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
-					$loginUrl = \craft\helpers\UrlHelper::url($loginPath, [
-						'return' => Craft::$app->getRequest()->getAbsoluteUrl(),
-					]);
-					$view = Craft::$app->getView();
-					$oldMode = $view->getTemplateMode();
-					$view->setTemplateMode(\craft\web\View::TEMPLATE_MODE_CP);
-					$html = $view->renderTemplate('klaviyo-connect-plus/login-required', [
-						'loginUrl' => $loginUrl,
-						'message' => Craft::t('klaviyo-connect-plus', 'This cart belongs to a user account. Please log in to view it.'),
-					]);
-					$view->setTemplateMode($oldMode);
-					return $this->asRaw($html);
-				}
-			}
+		// If no one is logged in, or wrong user is logged in
+		if ($cartCustomer && $cartCustomer->getIsCredentialed() && (! $currentUserId || $order->customerId !== $currentUserId)) {
+			// Show message page using CP template mode
+			$loginPath = Craft::$app->getConfig()->getGeneral()->getLoginPath();
+			$loginUrl = \craft\helpers\UrlHelper::url($loginPath, [
+				'return' => Craft::$app->getRequest()->getAbsoluteUrl(),
+			]);
+			$view = Craft::$app->getView();
+			$oldMode = $view->getTemplateMode();
+			$view->setTemplateMode(\craft\web\View::TEMPLATE_MODE_CP);
+			$html = $view->renderTemplate('klaviyo-connect-plus/login-required', [
+				'loginUrl' => $loginUrl,
+				'message' => Craft::t('klaviyo-connect-plus', 'This cart belongs to a user account. Please log in to view it.'),
+			]);
+			$view->setTemplateMode($oldMode);
+			return $this->asRaw($html);
 		}
 
 		// At this point, one of these is true:

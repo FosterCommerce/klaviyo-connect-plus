@@ -307,6 +307,8 @@ class Track extends Base
 			$lineItemsProperties[] = $addLineItemCustomPropertiesEvent->properties;
 		}
 
+		$lineItemsProperties = array_values(array_filter($lineItemsProperties));
+
 		$customProperties = [
 			'OrderID' => $order->id,
 			'OrderNumber' => $order->number,

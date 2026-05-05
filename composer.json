@@ -3,7 +3,7 @@
 	"description": "A plugin for Craft CMS. Grow your ecommerce business with smarter email automations.",
 	"license": "proprietary",
 	"type": "craft-plugin",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"keywords": [
 		"klaviyo"
 	],

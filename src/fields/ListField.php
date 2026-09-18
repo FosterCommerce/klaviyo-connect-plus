@@ -5,6 +5,7 @@ namespace fostercommerce\klaviyoconnectplus\fields;
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
+use fostercommerce\klaviyoconnectplus\models\KlaviyoList;
 use fostercommerce\klaviyoconnectplus\models\Settings;
 use fostercommerce\klaviyoconnectplus\Plugin;
 use GuzzleHttp\Exception\ClientException;
@@ -40,7 +41,7 @@ class ListField extends Field
 		return Craft::$app->getView()->renderTemplate('klaviyo-connect-plus/fieldtypes/select', [
 			'name' => $this->handle,
 			'options' => $listOptions,
-			'value' => $value ? $value->id : null,
+			'value' => $value instanceof KlaviyoList ? $value->id : $value,
 		]);
 	}
 

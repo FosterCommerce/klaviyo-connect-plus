@@ -1,5 +1,10 @@
 # Release Notes for Klaviyo Connect Plus
 
+## 1.0.2 - 2026-09-18
+
+### Fixed
+- Fixed an error on edit screens when the saved Klaviyo list isn't in the connected account.
+
 ## 1.0.1 - 2026-05-05
 
 ### Fixed
